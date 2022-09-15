@@ -9,40 +9,40 @@ export default function Homepage() {
     const [allScores, setAllScores] = useState([]);
     const nflTeamIds = [
         '', // 0
-        'Atlanta Falcons', // 1
-        'Buffalo Bills', // 2
-        'Chicago Bears', // 3
-        'Cincinnati Bengals', // 4
-        'Cleveland Browns', // 5
-        'Dallas Cowboys', // 6
-        'Denver Broncos', // 7
-        'Detroit Lions', // 8
-        'Green Bay Packers', // 9
-        'Tennessee Titans', // 10
-        'Indianapolis Colts', // 11
-        'Kansas City Chiefs', // 12
-        'Las Vegas Raiders', // 13
-        'Los Angeles Rams', // 14
-        'Miami Dolphins', // 15
-        'Minnesota Vikings', // 16
-        'New England Patriots', // 17
-        'New Orleans Saints', // 18
-        'New York Giants', // 19
-        'New York Jets', // 20
-        'Philadelphia Eagles', // 21
-        'Arizona Cardinals', // 22
-        'Pittsburgh Steelers', // 23
-        'Los Angeles Chargers', // 24
-        'San Francisco 49ers', // 25
-        'Seattle Seahawks', // 26
-        'Tampa Bay Buccaneers', // 27
-        'Washington Commanders', // 28
-        'Carolina Panthers', // 29
-        'Jacksonville Jaguars', // 30
+        'ATL', // 1
+        'BUF', // 2
+        'CHI', // 3
+        'CIN', // 4
+        'CLV', // 5
+        'DAL', // 6
+        'DEN', // 7
+        'DET', // 8
+        'GB', // 9
+        'TEN', // 10
+        'IND', // 11
+        'KC', // 12
+        'LV', // 13
+        'LAR', // 14
+        'MIA', // 15
+        'MIN', // 16
+        'NE', // 17
+        'NO', // 18
+        'NYG', // 19
+        'NYJ', // 20
+        'PHI', // 21
+        'ARI', // 22
+        'PIT', // 23
+        'LAC', // 24
+        'SF', // 25
+        'SEA', // 26
+        'TB', // 27
+        'WAS', // 28
+        'CAR', // 29
+        'JAX', // 30
         '', // 31
         '', // 32
-        'Baltimore Ravens', // 33
-        'Houston Texans', // 34
+        'BAL', // 33
+        'HOU', // 34
     ]
 
     useEffect(() => {
@@ -57,7 +57,7 @@ export default function Homepage() {
                         'awayScore': 0,
                         'homeTeam': '',
                         'homeScore': 0,
-                        'winner': 'tie'
+                        'winner': 'TIE'
                     }
                     resp.data.competitions[0].competitors.map(obj => {
                         if (obj.homeAway === 'home') {
