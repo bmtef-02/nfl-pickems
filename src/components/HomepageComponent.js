@@ -17,7 +17,6 @@ export default function Homepage() {
     const [allScores, setAllScores] = useState([]);
     const [weeklyPicks, setWeeklyPicks] = useState();
     const [weeklyGames, setWeeklyGames] = useState([]);
-    const [numCorrect, setNumCorrect] = useState(0);
     
     const nflTeamIds = [
         '', // 0
@@ -145,8 +144,6 @@ export default function Homepage() {
                                 arr={arr}
                                 weeklyGames={weeklyGames}
                                 allScores={allScores}
-                                numCorrect={numCorrect}
-                                setNumCorrect={setNumCorrect}
                             />
                         );
                     })}
