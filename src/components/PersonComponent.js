@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import Spinner from 'react-bootstrap/Spinner';
 
 export default function Person(props) {
     const {
@@ -21,7 +19,7 @@ export default function Person(props) {
             }
         })
         setNumCorrect(numCorrectCopy);
-    }, [])
+    })
 
     return (
         <Row>
@@ -33,7 +31,12 @@ export default function Person(props) {
                             <Col xs={3}>{game}</Col>
                             <Col 
                                 xs={3} 
-                                style={allScores[j].winner === arr[j + 1] ? {background: 'green'} : {background: 'red'}}
+                                style={
+                                    allScores[j].winner === arr[j + 1] ?    // if scores.winner matches pick
+                                        {background: 'green'} :
+                                        allScores[j].winner === 'NONE' ?    // if scores.winner is NONE, game hasn't started
+                                            null: {background: 'red'}       // else, scores.winner is TIE
+                                }
                             >
                                 {arr[j + 1]}
                             </Col>
@@ -44,9 +47,3 @@ export default function Person(props) {
         </Row>
     );
 }
-
-// awayScore: 31
-// awayTeam: "BUF"
-// homeScore: 10
-// homeTeam: "LAR"
-// winner: "BUF"

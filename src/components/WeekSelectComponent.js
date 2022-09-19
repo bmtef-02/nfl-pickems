@@ -11,8 +11,6 @@ export default function WeekSelect(props) {
         setSelectedWeek,
     } = props;
 
-    
-
     return (
         <Container fluid>
             <Row style={{justifyContent: 'center'}}>
@@ -20,7 +18,7 @@ export default function WeekSelect(props) {
                     <Form.Select
                         size='lg'
                         value={selectedWeek}
-                        onChange={(event) => setSelectedWeek(event.target.value)}
+                        onChange={(event) => setSelectedWeek(parseInt(event.target.value))}
                     >
                         <option value={1}>NFL Week 1</option>
                         <option value={2}>NFL Week 2</option>
