@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import Week from './WeekComponent';
 
 export default function Homepage() {
 
     const weekNum = 1;
     const nflWeeksUrl = 'https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2022/types/2/weeks?lang=en&region=us';
-    const nflWeekNumUrl = `https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2022/types/2/weeks/${weekNum}/events?lang=en&region=us`
+    const nflWeekNumUrl = `https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2022/types/2/weeks/${weekNum}/events?lang=en&region=us`;
+    const weeklyPicksUrl = `http://localhost:3000/weeklyPicks`;
     const [allScores, setAllScores] = useState([]);
+    const [weeklyPicks, setWeeklyPicks] = useState();
+    const [weeklyGames, setWeeklyGames] = useState([]);
     const nflTeamIds = [
         '', // 0
         'ATL', // 1
@@ -43,15 +47,17 @@ export default function Homepage() {
         '', // 32
         'BAL', // 33
         'HOU', // 34
-    ]
+    ];
 
     useEffect(() => {
         let allScoresCopy = [];
+        let weeklyGamesCopy = [];
         axios.get(nflWeekNumUrl)    // get all games for the week
         .then(resp => {
             resp.data.items.map((obj, i) => {
                 axios.get(obj.$ref)     // get API Url for the game
                 .then(resp => {
+                    weeklyGamesCopy[i] = resp.data.shortName;
                     let scores = {
                         'awayTeam': '',
                         'awayScore': 0,
@@ -98,18 +104,25 @@ export default function Homepage() {
                 })
             })
             setAllScores(allScoresCopy);
+            setWeeklyGames(weeklyGamesCopy);
         })
         .catch(err => {
             console.error(err);
             console.log(`error getting all games for the week`)
         })
-    }, [])
-
-    console.log(allScores)
+        axios.get(weeklyPicksUrl)
+        .then(resp => {
+            setWeeklyPicks(resp.data)
+        })
+        .catch(err => {
+            console.error(err);
+        })
+    }, []);
 
     return (
-        <div>
-            Hello World
-        </div>
-    )
+        <Week
+            weeklyPicks={weeklyPicks}
+            weeklyGames={weeklyGames}
+        />
+    );
 }
