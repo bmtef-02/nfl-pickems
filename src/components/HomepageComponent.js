@@ -1,16 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import Week from './WeekComponent';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import WeekSelect from './WeekSelectComponent';
+import Person from './PersonComponent';
+import Person2 from './Person2Component';
+import Spinner from 'react-bootstrap/Spinner';
+
 
 export default function Homepage() {
 
-    const weekNum = 1;
+    const [selectedWeek, setSelectedWeek] = useState(1);
     const nflWeeksUrl = 'https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2022/types/2/weeks?lang=en&region=us';
-    const nflWeekNumUrl = `https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2022/types/2/weeks/${weekNum}/events?lang=en&region=us`;
+    const nflWeekNumUrl = `https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2022/types/2/weeks/${selectedWeek}/events?lang=en&region=us`;
     const weeklyPicksUrl = `http://localhost:3000/weeklyPicks`;
     const [allScores, setAllScores] = useState([]);
     const [weeklyPicks, setWeeklyPicks] = useState();
     const [weeklyGames, setWeeklyGames] = useState([]);
+    const [numCorrect, setNumCorrect] = useState(0);
+    
     const nflTeamIds = [
         '', // 0
         'ATL', // 1
@@ -119,10 +127,37 @@ export default function Homepage() {
         })
     }, []);
 
-    return (
-        <Week
-            weeklyPicks={weeklyPicks}
-            weeklyGames={weeklyGames}
-        />
-    );
+    if (weeklyPicks) {
+        return (
+            <React.Fragment>
+                <WeekSelect 
+                    selectedWeek={selectedWeek} 
+                    setSelectedWeek={setSelectedWeek} 
+                />
+                <Container fluid>
+                    <Row style={{justifyContent: 'center'}}>
+                        {`Week ${selectedWeek}`}
+                    </Row>
+                    {weeklyPicks[0].picks.map((arr, i) => {
+                        return (
+                            <Person
+                                key={`person ${i}`}
+                                arr={arr}
+                                weeklyGames={weeklyGames}
+                                allScores={allScores}
+                                numCorrect={numCorrect}
+                                setNumCorrect={setNumCorrect}
+                            />
+                        );
+                    })}
+                </Container>
+                {/* <Person2
+                    weeklyPicks={weeklyPicks}
+                    weeklyGames={weeklyGames}
+                /> */}
+            </React.Fragment>
+        );
+    } else {
+        <Spinner animation='border' />
+    }
 }

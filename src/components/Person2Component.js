@@ -4,7 +4,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Spinner from 'react-bootstrap/Spinner';
 
-export default function Week(props) {
+export default function Person2(props) {
     const {
         weeklyPicks,
         weeklyGames,
