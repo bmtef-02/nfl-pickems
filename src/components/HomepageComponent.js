@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import WeekSelect from './WeekSelectComponent';
 import Person from './PersonComponent';
 import Spinner from 'react-bootstrap/Spinner';
-
+import Navbar from 'react-bootstrap/Navbar';
+import Accordion from 'react-bootstrap/Accordion';
+import NflLogo from '../img/nfl-logo.png'
 
 export default function Homepage() {
 
@@ -72,6 +76,7 @@ export default function Homepage() {
     const [allScores, setAllScores] = useState([]);
     const [weeklyPicks, setWeeklyPicks] = useState();
     const [weeklyGames, setWeeklyGames] = useState([]);
+    const [gameStatuses, setGameStatuses] = useState([]);
     
     const nflTeamIds = [
         '', // 0
@@ -114,6 +119,7 @@ export default function Homepage() {
     useEffect(() => {
         let allScoresCopy = [];
         let weeklyGamesCopy = [];
+        let gameStatusesCopy = [];
 
         axios.get(nflWeekNumUrl)    // get all games for the week
         .then(resp => {
@@ -163,6 +169,12 @@ export default function Homepage() {
                         }
                     })
                     allScoresCopy[i] = scores;
+
+                    axios.get(resp.data.competitions[0].status.$ref)
+                    .then(resp => {
+                        gameStatusesCopy[i] = resp.data.type.name
+                    })
+                    .catch(err => console.error(err))
                 })
                 .catch(err => {
                     console.error(err);
@@ -171,6 +183,7 @@ export default function Homepage() {
             })
             setAllScores(allScoresCopy);
             setWeeklyGames(weeklyGamesCopy);
+            setGameStatuses(gameStatusesCopy);
         })
         .catch(err => {
             console.error(err);
@@ -190,33 +203,68 @@ export default function Homepage() {
     if (weeklyPicks) {
         return (
             <React.Fragment>
+                <Navbar bg='light'>
+                    <Container className='justify-content-center'>
+                        <Navbar.Brand>
+                            <img 
+                                src={NflLogo}
+                                alt='nfl-logo'
+                                height='50'
+                                className='mx-2'
+                            />
+                            PICK'EMS
+                        </Navbar.Brand>
+                    </Container>
+                </Navbar>
                 <WeekSelect 
                     selectedWeek={selectedWeek} 
                     setSelectedWeek={setSelectedWeek} 
                 />
                 <Container fluid>
-                    {weeklyPicks.picks.map((arr, i) => {
-                        return (
-                            <Person
-                                key={`person ${i}`}
-                                arr={arr}
-                                weeklyGames={weeklyGames}
-                                allScores={allScores}
-                            />
-                        );
-                    })}
+                    <Accordion alwaysOpen>
+                        {weeklyPicks.picks.map((picksArr, i) => {
+                            return (
+                                <Person
+                                    key={`person ${i}`}
+                                    picksArr={picksArr}
+                                    weeklyGames={weeklyGames}
+                                    allScores={allScores}
+                                />
+                            );
+                        })}
+                    </Accordion>
                 </Container>
             </React.Fragment>
         );
     } else {
         return (
             <React.Fragment>
+                <Navbar bg='light'>
+                    <Container className='justify-content-center'>
+                        <Navbar.Brand>
+                            <img 
+                                src={NflLogo}
+                                alt='nfl-logo'
+                                height='50'
+                                className='mx-2'
+                            />
+                            PICK'EM
+                        </Navbar.Brand>
+                    </Container>
+                </Navbar>
                 <WeekSelect 
                     selectedWeek={selectedWeek} 
                     setSelectedWeek={setSelectedWeek} 
                 />
-                <Spinner animation='border' />
-                {`Picks for Week ${selectedWeek} not available yet!`}
+                <Container>
+                    <Row className='justify-content-center my-3'>
+                        <Spinner animation='border' />
+                    </Row>
+                    <Row className='justify-content-center'>
+                        {`Picks for Week ${selectedWeek} not available yet!`}
+                    </Row>
+                </Container>
+                
             </React.Fragment>
         )
     }

@@ -13,12 +13,13 @@ export default function WeekSelect(props) {
 
     return (
         <Container fluid>
-            <Row style={{justifyContent: 'center'}}>
-                <Col xs={6}>
+            <Row className='justify-content-center my-3'>
+                <Col xs={10}>
                     <Form.Select
                         size='lg'
                         value={selectedWeek}
                         onChange={(event) => setSelectedWeek(parseInt(event.target.value))}
+                        style={{ textAlignLast: 'center'}}
                     >
                         <option value={1}>NFL Week 1</option>
                         <option value={2}>NFL Week 2</option>
