@@ -9,16 +9,24 @@ export default function WeekSelect(props) {
     const {
         selectedWeek,
         setSelectedWeek,
+        setAllScores,
+        setWeeklyPicks,
+        setGameStatus,
     } = props;
 
     return (
         <Container fluid>
             <Row className='justify-content-center my-3'>
-                <Col xs={10}>
+                <Col xs={6}>
                     <Form.Select
                         size='lg'
                         value={selectedWeek}
-                        onChange={(event) => setSelectedWeek(parseInt(event.target.value))}
+                        onChange={(event) => {
+                            setSelectedWeek(parseInt(event.target.value));
+                            setAllScores([]);
+                            setWeeklyPicks(null);
+                            setGameStatus([]);
+                        }}
                         style={{ textAlignLast: 'center'}}
                     >
                         <option value={1}>NFL Week 1</option>
