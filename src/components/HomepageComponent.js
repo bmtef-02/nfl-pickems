@@ -130,7 +130,6 @@ export default function Homepage() {
                 // setting match up data
                 axios.get(obj.$ref)
                 .then(resp => {
-
                     let matchUp = {
                         'awayTeam': '',
                         'awayScore': 0,
@@ -171,7 +170,7 @@ export default function Homepage() {
                         axios.get(awayTeam.score.$ref)
                         .then(resp => {
                             matchUp.awayScore = resp.data.value;
-                            allScoresCopy[i] = matchUp;
+                            allScoresCopy[i] = matchUp;             // SOMETHING WRONG HERE. SOMETIMES ONE OF THE MATCUPS DOESN'T GET SET
                             setAllScores(allScoresCopy);
                         })
                         .catch(err => {
@@ -199,7 +198,7 @@ export default function Homepage() {
                     console.error(err);
                     console.log(`can't get API Url for game #${i}`);
                 })
-            })        
+            }) 
         })
         .catch(err => {
             console.error(err);
@@ -218,97 +217,6 @@ export default function Homepage() {
         })
     }, [nflWeekNumUrl])    
 
-    // useEffect(() => {
-    //     let allScoresCopy = [];
-    //     let gameStatusesCopy = [];
-
-    //     axios.get(nflWeekNumUrl)    // get all games for the week
-    //     .then(resp => {
-    //         console.log(JSON.stringify(selectedWeek))
-    //         resp.data.items.map((obj, i) => {
-    //             axios.get(obj.$ref)     // get API Url for the game
-    //             .then(resp => {
-    //                 let scores = {
-    //                     'awayTeam': '',
-    //                     'awayScore': 0,
-    //                     'homeTeam': '',
-    //                     'homeScore': 0,
-    //                     'winner': 'TIE'
-    //                 }
-    //                 resp.data.competitions[0].competitors.map(obj => {
-    //                     if (obj.winner === undefined) {     // if game hasn't finished yet
-    //                         scores.winner = 'NONE'
-    //                     }
-    //                     if (obj.homeAway === 'home') {
-    //                         scores.homeTeam = nflTeamIds[obj.id];
-    //                         if (obj.winner === true) {
-    //                             scores.winner = nflTeamIds[obj.id];
-    //                         }
-    //                         console.log(JSON.stringify(scores.homeTeam))
-
-    //                         axios.get(obj.score.$ref)   // get score for home team
-    //                         .then(resp => {
-    //                             scores.homeScore = resp.data.value;
-    //                         })
-    //                         .catch(err => {
-    //                             console.error(err);
-    //                             console.log(`can't get home score for game #${i}`)
-    //                         })
-    //                     } else if (obj.homeAway === 'away') {
-    //                         scores.awayTeam = nflTeamIds[obj.id];
-    //                         if (obj.winner === true) {
-    //                             scores.winner = nflTeamIds[obj.id];
-    //                         }
-    //                         console.log(JSON.stringify(scores.awayTeam))
-
-    //                         axios.get(obj.score.$ref) // get score for away team
-    //                         .then(resp => {
-    //                             scores.awayScore = resp.data.value;
-    //                         })
-    //                         .catch(err => {
-    //                             console.error(err);
-    //                             console.log(`can't get away score for game #${i}`);
-    //                         })
-    //                     } else {
-    //                         console.log(`game #${i} doesn't have a home or away team`);
-    //                     }
-    //                     allScoresCopy[i] = scores;
-    //                 })
-                    
-
-    //                 axios.get(resp.data.competitions[0].status.$ref)
-    //                 .then(resp => {
-    //                     gameStatusesCopy[i] = resp.data.type.name
-    //                 })
-    //                 .catch(err => console.error(err))
-    //             })
-    //             .catch(err => {
-    //                 console.error(err);
-    //                 console.log(`can't get API Url for game #${i}`)
-    //             })
-    //         })
-    //         setAllScores(allScoresCopy);
-    //         setGameStatuses(gameStatusesCopy);
-    //     })
-    //     .catch(err => {
-    //         console.error(err);
-    //         console.log(`error getting all games for the week`)
-    //     })
-
-    //     axios.get(weeklyPicksUrl)   // getting picks for the selected week
-    //     .then(resp => {
-    //         let weeklyPicksCopy = resp.data.find(picksArr => picksArr.week === selectedWeek);
-    //         setWeeklyPicks(weeklyPicksCopy);
-    //     })
-    //     .catch(err => {
-    //         console.error(err);
-    //     })
-    // }, [nflWeekNumUrl]);
-
-    // console.log(JSON.parse(JSON.stringify(allScores)))
-    // console.log(allScores.includes(undefined))
-
-    // if (weeklyPicks && allScores.length === numOfGames && !allScores.includes(undefined) && gameStatus.length === numOfGames) {
     if (weeklyPicks && 
         allScores.length === numOfGames && 
         !(allScores.includes(undefined)) && 
@@ -352,19 +260,7 @@ export default function Homepage() {
                 </Accordion>
             </React.Fragment>
         );
-    } else {
-        console.log(
-            `selectedWeek: ${selectedWeek}, 
-            weeklyPicks: ${!!weeklyPicks}, 
-            allScores.length: ${(allScores.length === numOfGames)}, 
-            allScores.includes: ${!(allScores.includes(undefined))}, 
-            gameStatus.includes: ${!(gameStatus.includes(undefined))},
-            gamesStatus.length: ${(gameStatus.length === numOfGames)}`
-        )
-        console.log(JSON.stringify(selectedWeek))
-        console.log(weeklyPicks)
-        console.log(JSON.parse(JSON.stringify(allScores)))
-        console.log(JSON.parse(JSON.stringify(gameStatus)))
+    } else if (!weeklyPicks) {
         return (
             <React.Fragment>
                 <Navbar bg='light'>
@@ -396,6 +292,52 @@ export default function Homepage() {
                     </Row>
                 </Container>
                 
+            </React.Fragment>
+        )
+    } else {
+        console.log(
+            `selectedWeek: ${selectedWeek}, 
+            weeklyPicks: ${!!weeklyPicks}, 
+            allScores.length: ${(allScores.length === numOfGames)}, 
+            allScores.includes: ${!(allScores.includes(undefined))}, 
+            gameStatus.includes: ${!(gameStatus.includes(undefined))},
+            gamesStatus.length: ${(gameStatus.length === numOfGames)}`
+        )
+        console.log(JSON.stringify(selectedWeek))
+        console.log(weeklyPicks)
+        console.log(JSON.parse(JSON.stringify(allScores)))
+        console.log(JSON.parse(JSON.stringify(gameStatus)))
+
+        return (
+            <React.Fragment>
+                <Navbar bg='light'>
+                    <Container className='justify-content-center'>
+                        <Navbar.Brand>
+                            <img 
+                                src={NflLogo}
+                                alt='nfl-logo'
+                                height='50'
+                                className='mx-2'
+                            />
+                            PICK'EMS
+                        </Navbar.Brand>
+                    </Container>
+                </Navbar>
+                <WeekSelect 
+                    selectedWeek={selectedWeek} 
+                    setSelectedWeek={setSelectedWeek}
+                    setAllScores={setAllScores}
+                    setWeeklyPicks={setWeeklyPicks}
+                    setGameStatus={setGameStatus}
+                />
+                <Container>
+                    <Row className='justify-content-center my-3'>
+                        <Spinner animation='border' />
+                    </Row>
+                    <Row className='justify-content-center'>
+                        {`Loading Data`}
+                    </Row>
+                </Container>
             </React.Fragment>
         )
     }

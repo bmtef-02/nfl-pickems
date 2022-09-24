@@ -32,10 +32,9 @@ export default function Person(props) {
             <Accordion.Body>
                 {allScores.map((matchUp, j) => {
                     const pick = picksArr.find(pick => pick === matchUp.awayTeam || pick === matchUp.homeTeam);
-                    if (!pick) {
-                        console.log(`error: ${matchUp.awayTeam} nor ${matchUp.homeTeam}`, JSON.parse(JSON.stringify(picksArr)))
-                        // console.log(JSON.parse(JSON.stringify(matchUp)))
-                    }
+                    // if (!pick) {
+                    //     console.log(`error: ${matchUp.awayTeam} nor ${matchUp.homeTeam}`, JSON.parse(JSON.stringify(picksArr)))
+                    // }
                     return (
                         <Row key={`game ${j}`} className='border'>
                             <Col xs={2} className='d-flex justify-content-start'>{matchUp.awayTeam}</Col>
@@ -49,7 +48,7 @@ export default function Person(props) {
                                 style={
                                     allScores[j].winner === picksArr.find(pick => pick === matchUp.awayTeam || pick === matchUp.homeTeam) ?     // if scores.winner matches pick
                                     {background: '#8cd98c'} :
-                                    allScores[j].winner === '' ?    // if scores.winner is empty, game hasn't finished
+                                    allScores[j].winner === null ?    // if scores.winner is null, game hasn't finished
                                         null : {background: '#ff6666'}       // else, scores.winner is TIE
                                 }
                             >
@@ -67,7 +66,6 @@ export default function Person(props) {
                 })}
                 <Row className='border'>
                     <Col className='d-flex justify-content-end'>Monday Night Total: {picksArr[picksArr.length - 1]}</Col>
-                    {/* <Col>{picksArr[picksArr.length - 1]}</Col> */}
                 </Row>
             </Accordion.Body>
         </Accordion.Item>
