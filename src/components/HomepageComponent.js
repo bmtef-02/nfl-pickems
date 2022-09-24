@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import WeekSelect from './WeekSelectComponent';
 import Person from './PersonComponent';
 import Spinner from 'react-bootstrap/Spinner';
@@ -70,13 +69,12 @@ export default function Homepage() {
             return 1;
         }
     });
-    const nflWeeksUrl = 'https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2022/types/2/weeks?lang=en&region=us';
+    // const nflWeeksUrl = 'https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2022/types/2/weeks?lang=en&region=us';
     const nflWeekNumUrl = `https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2022/types/2/weeks/${selectedWeek}/events?lang=en&region=us`;
     const weeklyPicksUrl = `http://localhost:3000/weeklyPicks`;
     const [allScores, setAllScores] = useState([]);
     const [weeklyPicks, setWeeklyPicks] = useState();
     const [gameStatus, setGameStatus] = useState([]);
-    const [numOfGames, setNumOfGames] = useState(0);
 
     const nflTeamIds = [
         '', // 0
@@ -116,134 +114,95 @@ export default function Homepage() {
         'HOU', // 34
     ];
 
-    
-    // getting all game data for the week from API
-    useEffect(() => {
-        let allScoresCopy = [];
-        let gameStatusCopy = [];
-
+    const getApiData = () => {
+        let allScoresCopy = []
         axios.get(nflWeekNumUrl)
         .then(resp => {
-            setNumOfGames(resp.data.items.length)
-            resp.data.items.forEach((obj, i) => {
+            Promise.all(resp.data.items.map(item => axios.get(item.$ref)))
+            .then(matchUpArr => matchUpArr.map(matchUpObj => matchUpObj.data.competitions[0].competitors))
+            .then(compArr => compArr.forEach((game, j) => {
+                let winner = '';
+                if (game[0].winner) {
+                    winner = nflTeamIds[game[0].id]
+                } else if (game[1].winner) {
+                    winner = nflTeamIds[game[1].id]
+                } else if (game[0].winner === undefined && game[1].winner === undefined) {
+                    winner = null;
+                } else {
+                    winner = 'TIE';
+                }
 
-                // setting match up data
-                axios.get(obj.$ref)
-                .then(resp => {
-                    let matchUp = {
-                        'awayTeam': '',
-                        'awayScore': 0,
-                        'homeTeam': '',
-                        'homeScore': 0,
-                        'winner': '',
-                        'finished': false, 
-                    };
-                    let homeTeam;
-                    let awayTeam;
-
-                    if (resp.data.competitions[0].competitors[0].homeAway === 'home') {
-                        homeTeam = resp.data.competitions[0].competitors[0];
-                        awayTeam = resp.data.competitions[0].competitors[1];
-                        matchUp.homeTeam = nflTeamIds[homeTeam.id];
-                        matchUp.awayTeam = nflTeamIds[awayTeam.id];
-                    } else {
-                        homeTeam = resp.data.competitions[0].competitors[1];
-                        awayTeam = resp.data.competitions[0].competitors[0];
-                        matchUp.homeTeam = nflTeamIds[homeTeam.id];
-                        matchUp.awayTeam = nflTeamIds[awayTeam.id];
+                Promise.all(game.map(team => axios.get(team.score.$ref)))
+                .then(scoreArr => {
+                    return {
+                        'index': j,
+                        'homeScore': scoreArr[0].data.value,
+                        'awayScore': scoreArr[1].data.value,
+                        'homeTeam': nflTeamIds[game[0].id],
+                        'awayTeam': nflTeamIds[game[1].id],
+                        'winner': winner,
                     }
-
-                    if (homeTeam.winner === true) {
-                        matchUp.winner = nflTeamIds[homeTeam.id];
-                    } else if (awayTeam.winner === true) {
-                        matchUp.winner = nflTeamIds[awayTeam.id];
-                    } else if (homeTeam.winner === false && awayTeam.winner === false) {
-                        matchUp.winner = 'TIE';
-                    } else if (homeTeam.winner === undefined && awayTeam.winner === undefined) {    // game hasn't finished
-                        matchUp.winner = '';
+                })
+                .then(test => {
+                    allScoresCopy[j] = test
+                    if (allScoresCopy.length === compArr.length && !allScoresCopy.includes(undefined)) {
+                        setAllScores(allScoresCopy)
                     }
-
-                    axios.get(homeTeam.score.$ref)
-                    .then(resp => {
-                        matchUp.homeScore = resp.data.value;
-
-                        axios.get(awayTeam.score.$ref)
-                        .then(resp => {
-                            matchUp.awayScore = resp.data.value;
-                            allScoresCopy[i] = matchUp;             // SOMETHING WRONG HERE. SOMETIMES ONE OF THE MATCUPS DOESN'T GET SET
-                            setAllScores(allScoresCopy);
-                        })
-                        .catch(err => {
-                            console.error(err);
-                            console.log('cannot get awayTeam score');
-                        })
-                    })
-                    .catch(err => {
-                        console.error(err);
-                        console.log('cannot get homeTeam score');
-                    })
-
-                    // setting game status
-                    axios.get(resp.data.competitions[0].status.$ref)
-                    .then(resp => {
-                        gameStatusCopy[i] = resp.data.type.name;
-                        setGameStatus(gameStatusCopy);
-                    })
-                    .catch(err => {
-                        console.error(err);
-                        console.log(`can't get game status for game #${i}`);
-                    })
                 })
-                .catch(err => {
-                    console.error(err);
-                    console.log(`can't get API Url for game #${i}`);
-                })
-            }) 
+            }))
         })
-        .catch(err => {
-            console.error(err);
-            console.log('cannot get NFL week');
+    };
+
+    const getStatusData = () => {
+        axios.get(nflWeekNumUrl)
+        .then(resp => {
+            Promise.all(resp.data.items.map(item => axios.get(item.$ref)))
+            .then(matchUpArr => matchUpArr.map(matchUpObj => matchUpObj.data.competitions[0]))
+            .then(gamesArr => {
+                Promise.all(gamesArr.map(game => axios.get(game.status.$ref)))
+                .then(statusDataArr => statusDataArr.map(statusObj => statusObj.data.type.name))
+                .then(statusArr => setGameStatus(statusArr))
+            })
         })
-    }, [nflWeekNumUrl])
+    }
+
+    const getPicksData = () => {
+        axios.get(weeklyPicksUrl)
+        .then(resp => {
+            setWeeklyPicks(resp.data.find(obj => obj.week === selectedWeek))
+        })
+    }
 
     useEffect(() => {
-        axios.get(weeklyPicksUrl)   // getting picks for the selected week
-        .then(resp => {
-            let weeklyPicksCopy = resp.data.find(picksArr => picksArr.week === selectedWeek);
-            setWeeklyPicks(weeklyPicksCopy);
-        })
-        .catch(err => {
-            console.error(err);
-        })
-    }, [nflWeekNumUrl])    
+        getApiData();
+        getStatusData();
+        getPicksData();
+    // eslint-disable-next-line
+    }, [nflWeekNumUrl])
 
-    if (weeklyPicks && 
-        allScores.length === numOfGames && 
-        !(allScores.includes(undefined)) && 
-        !(gameStatus.includes(undefined)) &&
-        gameStatus.length === numOfGames) {
-        return (
-            <React.Fragment>
-                <Navbar bg='light'>
-                    <Container className='justify-content-center'>
-                        <Navbar.Brand>
-                            <img 
-                                src={NflLogo}
-                                alt='nfl-logo'
-                                height='50'
-                                className='mx-2'
-                            />
-                            PICK'EMS
-                        </Navbar.Brand>
-                    </Container>
-                </Navbar>
-                <WeekSelect 
-                    selectedWeek={selectedWeek} 
-                    setSelectedWeek={setSelectedWeek}
-                    setAllScores={setAllScores}
-                    setWeeklyPicks={setWeeklyPicks}
-                    setGameStatus={setGameStatus}
-                />
+    return (
+        <React.Fragment>
+            <Navbar bg='light'>
+                <Container className='justify-content-center'>
+                    <Navbar.Brand>
+                        <img 
+                            src={NflLogo}
+                            alt='nfl-logo'
+                            height='50'
+                            className='mx-2'
+                        />
+                        PICK'EMS
+                    </Navbar.Brand>
+                </Container>
+            </Navbar>
+            <WeekSelect 
+                selectedWeek={selectedWeek} 
+                setSelectedWeek={setSelectedWeek}
+                setAllScores={setAllScores}
+                setWeeklyPicks={setWeeklyPicks}
+                setGameStatus={setGameStatus}
+            />
+            { weeklyPicks ? 
                 <Accordion alwaysOpen>
                     <Container fluid>
                         {weeklyPicks.picks.map((picksArr, i) => {
@@ -258,87 +217,17 @@ export default function Homepage() {
                         })}
                     </Container>
                 </Accordion>
-            </React.Fragment>
-        );
-    } else if (!weeklyPicks) {
-        return (
-            <React.Fragment>
-                <Navbar bg='light'>
-                    <Container className='justify-content-center'>
-                        <Navbar.Brand>
-                            <img 
-                                src={NflLogo}
-                                alt='nfl-logo'
-                                height='50'
-                                className='mx-2'
-                            />
-                            PICK'EMS
-                        </Navbar.Brand>
-                    </Container>
-                </Navbar>
-                <WeekSelect 
-                    selectedWeek={selectedWeek} 
-                    setSelectedWeek={setSelectedWeek}
-                    setAllScores={setAllScores}
-                    setWeeklyPicks={setWeeklyPicks}
-                    setGameStatus={setGameStatus}
-                />
+                : 
                 <Container>
                     <Row className='justify-content-center my-3'>
                         <Spinner animation='border' />
                     </Row>
                     <Row className='justify-content-center'>
-                        {`Picks for Week ${selectedWeek} not available yet!`}
+                        {`Week ${selectedWeek} picks are not available yet!`}
                     </Row>
                 </Container>
-                
-            </React.Fragment>
-        )
-    } else {
-        console.log(
-            `selectedWeek: ${selectedWeek}, 
-            weeklyPicks: ${!!weeklyPicks}, 
-            allScores.length: ${(allScores.length === numOfGames)}, 
-            allScores.includes: ${!(allScores.includes(undefined))}, 
-            gameStatus.includes: ${!(gameStatus.includes(undefined))},
-            gamesStatus.length: ${(gameStatus.length === numOfGames)}`
-        )
-        console.log(JSON.stringify(selectedWeek))
-        console.log(weeklyPicks)
-        console.log(JSON.parse(JSON.stringify(allScores)))
-        console.log(JSON.parse(JSON.stringify(gameStatus)))
-
-        return (
-            <React.Fragment>
-                <Navbar bg='light'>
-                    <Container className='justify-content-center'>
-                        <Navbar.Brand>
-                            <img 
-                                src={NflLogo}
-                                alt='nfl-logo'
-                                height='50'
-                                className='mx-2'
-                            />
-                            PICK'EMS
-                        </Navbar.Brand>
-                    </Container>
-                </Navbar>
-                <WeekSelect 
-                    selectedWeek={selectedWeek} 
-                    setSelectedWeek={setSelectedWeek}
-                    setAllScores={setAllScores}
-                    setWeeklyPicks={setWeeklyPicks}
-                    setGameStatus={setGameStatus}
-                />
-                <Container>
-                    <Row className='justify-content-center my-3'>
-                        <Spinner animation='border' />
-                    </Row>
-                    <Row className='justify-content-center'>
-                        {`Loading Data`}
-                    </Row>
-                </Container>
-            </React.Fragment>
-        )
-    }
+            }
+            
+        </React.Fragment>
+    )
 }

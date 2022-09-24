@@ -32,9 +32,9 @@ export default function Person(props) {
             <Accordion.Body>
                 {allScores.map((matchUp, j) => {
                     const pick = picksArr.find(pick => pick === matchUp.awayTeam || pick === matchUp.homeTeam);
-                    // if (!pick) {
-                    //     console.log(`error: ${matchUp.awayTeam} nor ${matchUp.homeTeam}`, JSON.parse(JSON.stringify(picksArr)))
-                    // }
+                    if (!pick) {
+                        console.log(`error: ${matchUp.awayTeam} nor ${matchUp.homeTeam}`, JSON.parse(JSON.stringify(picksArr)))
+                    }
                     return (
                         <Row key={`game ${j}`} className='border'>
                             <Col xs={2} className='d-flex justify-content-start'>{matchUp.awayTeam}</Col>
