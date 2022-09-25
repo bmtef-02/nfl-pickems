@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import WeekSelect from './WeekSelectComponent';
 import Person from './PersonComponent';
 import Spinner from 'react-bootstrap/Spinner';
