@@ -71,7 +71,7 @@ export default function Homepage() {
     });
     // const nflWeeksUrl = 'https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2022/types/2/weeks?lang=en&region=us';
     const nflWeekNumUrl = `https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2022/types/2/weeks/${selectedWeek}/events?lang=en&region=us`;
-    const weeklyPicksUrl = `http://localhost:3000/weeklyPicks`;
+    const weeklyPicksUrl = `https://nfl-pickems-app.herokuapp.com/weeklyPicks`;
     const [allScores, setAllScores] = useState([]);
     const [weeklyPicks, setWeeklyPicks] = useState();
     const [gameStatus, setGameStatus] = useState([]);
