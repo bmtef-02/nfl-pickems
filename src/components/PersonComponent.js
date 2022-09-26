@@ -65,7 +65,7 @@ export default function Person(props) {
                                 }
                             >
                                 {pick}
-                                {gameStatus[j] === "STATUS_IN_PROGRESS" || gameStatus[j] === "STATUS_END_PERIOD" ?
+                                {gameStatus[j] === "STATUS_IN_PROGRESS" || gameStatus[j] === "STATUS_END_PERIOD" || gameStatus[j] === "STATUS_HALFTIME" ?
                                     <p className='bg-danger position-absolute translate-middle' style={{ borderRadius: '1px', paddingLeft: '1px', paddingRight: '1px', top: '8px', right: '-6px', fontSize: '7px', color: 'white'}}>LIVE</p>
                                     : null
                                 }
