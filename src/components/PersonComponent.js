@@ -65,10 +65,8 @@ export default function Person(props) {
                                 }
                             >
                                 {pick}
-                                {gameStatus[j] === "STATUS_IN_PROGRESS" ?
-                                    <span className="position-absolute translate-middle bg-danger border border-light rounded-circle" style={{padding: '4px', top: '8px', right: '-4px'}}>
-                                        <span className="visually-hidden">Live Game Alert</span>
-                                    </span>
+                                {gameStatus[j] === "STATUS_IN_PROGRESS" || gameStatus[j] === "STATUS_END_PERIOD" ?
+                                    <p className='bg-danger position-absolute translate-middle' style={{ borderRadius: '1px', paddingLeft: '1px', paddingRight: '1px', top: '8px', right: '-6px', fontSize: '7px', color: 'white'}}>LIVE</p>
                                     : null
                                 }
                                 
