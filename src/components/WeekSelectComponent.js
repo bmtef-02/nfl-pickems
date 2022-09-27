@@ -12,6 +12,7 @@ export default function WeekSelect(props) {
         setAllScores,
         setWeeklyPicks,
         setGameStatus,
+        setDoPicksExist,
     } = props;
 
     return (
@@ -26,6 +27,7 @@ export default function WeekSelect(props) {
                             setAllScores([]);
                             setWeeklyPicks(null);
                             setGameStatus([]);
+                            setDoPicksExist(true);
                         }}
                         style={{ textAlignLast: 'center'}}
                     >

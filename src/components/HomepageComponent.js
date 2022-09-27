@@ -177,8 +177,6 @@ export default function Homepage() {
             } else {
                 setDoPicksExist(false);
             }
-            
-            
         })
     }
 
@@ -210,8 +208,9 @@ export default function Homepage() {
                 setAllScores={setAllScores}
                 setWeeklyPicks={setWeeklyPicks}
                 setGameStatus={setGameStatus}
+                setDoPicksExist={setDoPicksExist}
             />
-            { weeklyPicks ? 
+            { weeklyPicks && allScores && gameStatus ? 
                 <Accordion alwaysOpen>
                     <Container fluid>
                         {weeklyPicks.picks.map((picksArr, i) => {
