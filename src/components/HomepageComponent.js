@@ -76,6 +76,7 @@ export default function Homepage() {
     const [allScores, setAllScores] = useState([]);
     const [weeklyPicks, setWeeklyPicks] = useState();
     const [gameStatus, setGameStatus] = useState([]);
+    const [doPicksExist, setDoPicksExist] = useState(true);
 
     const nflTeamIds = [
         '', // 0
@@ -170,7 +171,14 @@ export default function Homepage() {
     const getPicksData = () => {
         axios.get(weeklyPicksUrl)
         .then(resp => {
-            setWeeklyPicks(resp.data.find(obj => obj.week === selectedWeek))
+            if (resp.data.find(obj => obj.week === selectedWeek)) {
+                setDoPicksExist(true);
+                setWeeklyPicks(resp.data.find(obj => obj.week === selectedWeek));
+            } else {
+                setDoPicksExist(false);
+            }
+            
+            
         })
     }
 
@@ -223,9 +231,15 @@ export default function Homepage() {
                     <Row className='justify-content-center my-3'>
                         <Spinner animation='border' />
                     </Row>
-                    <Row className='justify-content-center'>
-                        {`Week ${selectedWeek} picks are not available yet!`}
-                    </Row>
+                    { doPicksExist ? 
+                        null
+                        :
+                        <Row>
+                            <Col xs={12} className='d-flex justify-content-center'>{`Week ${selectedWeek} picks are not available yet!`}</Col>
+                            <Col xs={12} className='d-flex justify-content-center'>Please pick an earlier week.</Col>
+                        </Row>
+                        
+                    }
                 </Container>
             }
             
