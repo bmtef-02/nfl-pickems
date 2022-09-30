@@ -76,6 +76,7 @@ export default function Homepage() {
     const [allScores, setAllScores] = useState([]);
     const [weeklyPicks, setWeeklyPicks] = useState();
     const [gameStatus, setGameStatus] = useState([]);
+    const [indexOfMNF, setIndexOfMFN] = useState();
     const [doPicksExist, setDoPicksExist] = useState(true);
 
     const nflTeamIds = [
@@ -166,7 +167,18 @@ export default function Homepage() {
                 .then(statusArr => setGameStatus(statusArr))
             })
         })
-    }
+    };
+
+    const getGameDates = () => {
+        axios.get(nflWeekNumUrl)
+        .then(resp => {
+            Promise.all(resp.data.items.map(item => axios.get(item.$ref)))
+            .then(matchUpArr => matchUpArr.map(matchUpObj => matchUpObj.data.date))
+            // .then(datesArr => setGameDates(datesArr))
+            .then(datesArr => datesArr.map(date => (new Date(date)).getTime()))
+            .then(timeArr => setIndexOfMFN(timeArr.indexOf(Math.max(...timeArr))))
+        })
+    };
 
     const getPicksData = () => {
         axios.get(weeklyPicksUrl)
@@ -178,12 +190,13 @@ export default function Homepage() {
                 setDoPicksExist(false);
             }
         })
-    }
+    };
 
     useEffect(() => {
         getApiData();
         getStatusData();
         getPicksData();
+        getGameDates();
     // eslint-disable-next-line
     }, [nflWeekNumUrl])
 
@@ -210,7 +223,7 @@ export default function Homepage() {
                 setGameStatus={setGameStatus}
                 setDoPicksExist={setDoPicksExist}
             />
-            { weeklyPicks && allScores && gameStatus ? 
+            { weeklyPicks && allScores && gameStatus && indexOfMNF ? 
                 <Accordion alwaysOpen className='mx-xxl-25 mx-xl-20 mx-lg-15 mx-md-10 mx-sm-6'>
                     <Container fluid>
                         {weeklyPicks.picks.map((picksArr, i) => {
@@ -220,6 +233,7 @@ export default function Homepage() {
                                     picksArr={picksArr}
                                     allScores={allScores}
                                     gameStatus={gameStatus}
+                                    indexOfMNF={indexOfMNF}
                                 />
                             );
                         })}

@@ -9,6 +9,7 @@ export default function Person(props) {
         picksArr,
         allScores,
         gameStatus,
+        indexOfMNF,
     } = props;
 
     const [numCorrect, setNumCorrect] = useState(0);
@@ -38,7 +39,7 @@ export default function Person(props) {
                     </h2>
                 }
             </Accordion.Header>
-            <Accordion.Body>
+            <Accordion.Body className='mx-xxl-7 mx-xl-6 mx-lg-5 mx-md-4'>
                 <Row className=''>
                     <Col xs={4} className='d-flex justify-content-center'>
                         <h6>Away Team</h6>
@@ -58,11 +59,11 @@ export default function Person(props) {
                     // }
                     return (
                         <Row key={`game ${j}`} className='border-top border-dark'>
-                            <Col xs={2} className='d-flex justify-content-start'>{matchUp.awayTeam}</Col>
-                            <Col xs={2} className=''>{matchUp.awayScore}</Col>
-                            <Col xs={1} className='d-flex justify-content-end'>vs</Col>
-                            <Col xs={2} className='d-flex justify-content-start'>{matchUp.homeTeam}</Col>
-                            <Col xs={2} className=''>{matchUp.homeScore}</Col>
+                            <Col xs={2} className='d-flex justify-content-end bg-'>{matchUp.awayTeam}</Col>
+                            <Col xs={2} className='d-flex justify-content-start bg-'>{matchUp.awayScore}</Col>
+                            <Col xs={1} className='d-flex justify-content-center bg-'>vs</Col>
+                            <Col xs={2} className='d-flex justify-content-end bg-'>{matchUp.homeTeam}</Col>
+                            <Col xs={2} className='d-flex justify-content-start bg-'>{matchUp.homeScore}</Col>
                             <Col
                                 xs={3}
                                 className='d-flex justify-content-center position-relative'
@@ -73,7 +74,7 @@ export default function Person(props) {
                                         {background: '#E8E8E8'} : {background: '#ff6666'}       // else, scores.winner is TIE
                                 }
                             >
-                                {pick}
+                                {pick}{j === indexOfMNF ? '*' : null}
                                 {gameStatus[j] === "STATUS_IN_PROGRESS" || gameStatus[j] === "STATUS_END_PERIOD" || gameStatus[j] === "STATUS_HALFTIME" ?
                                     <p className='bg-danger position-absolute translate-middle' style={{ borderRadius: '1px', paddingLeft: '1px', paddingRight: '1px', top: '8px', right: '-6px', fontSize: '7px', color: 'white'}}>LIVE</p>
                                     : null
@@ -83,8 +84,26 @@ export default function Person(props) {
                         </Row>
                     )
                 })}
-                <Row className='border-top border-dark'>
-                    <Col className='d-flex justify-content-end'>Monday Night Total: {picksArr[picksArr.length - 1]}</Col>
+                <Row className='border-top border-dark pt-1'>
+                    <Col xs={12} className='d-flex justify-content-end px-1'>* = MNF Game</Col>
+                </Row>
+                <Row className='pt-2 d-flex justify-content-center'>
+                    <Col xs={8} className='border-bottom border-dark d-flex justify-content-center'>
+                        <h6>Tiebreaker</h6>
+                    </Col>
+                </Row>
+                <Row className='pt-1'>
+                    <Col xs={12} className='d-flex justify-content-center'>
+                        MNF Total Points Scored:
+                        {gameStatus[indexOfMNF] != 'STATUS_SCHEDULED' ? 
+                            !allScores[indexOfMNF] ? 
+                                ' ERROR' : ` ${allScores[indexOfMNF].homeScore + allScores[indexOfMNF].awayScore}`
+                            : ' N/A'
+                        }
+                    </Col>
+                    <Col xs={12} className='d-flex justify-content-center'>
+                        MNF Total Points Guess: {picksArr[picksArr.length - 1]}
+                    </Col>
                 </Row>
             </Accordion.Body>
         </Accordion.Item>
