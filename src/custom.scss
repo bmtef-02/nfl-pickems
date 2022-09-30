@@ -1,0 +1,24 @@
+// Override default variables before the import
+$spacer: 1rem;
+$spacers: (
+  0: 0,
+  1: $spacer * .25,
+  2: $spacer * .5,
+  3: $spacer,
+  4: $spacer * 1.5,
+  5: $spacer * 3,
+  6: $spacer * 6,
+  7: $spacer * 7,
+  10: $spacer * 10,
+  15: $spacer * 15,
+  20: $spacer * 20,
+  25: $spacer * 25,
+  30: $spacer * 30,
+  35: $spacer * 35,
+);
+
+
+
+
+// Import Bootstrap and its default variables
+@import '~bootstrap/scss/bootstrap.scss';
