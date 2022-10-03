@@ -223,7 +223,7 @@ export default function Homepage() {
                 setGameStatus={setGameStatus}
                 setDoPicksExist={setDoPicksExist}
             />
-            { weeklyPicks && allScores && gameStatus && indexOfMNF ? 
+            { weeklyPicks && allScores && gameStatus && (indexOfMNF >= 0) ? 
                 <Accordion alwaysOpen className='mx-xxl-25 mx-xl-20 mx-lg-15 mx-md-10 mx-sm-6'>
                     <Container fluid>
                         {weeklyPicks.picks.map((picksArr, i) => {
